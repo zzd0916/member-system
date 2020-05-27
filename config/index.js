@@ -1,3 +1,5 @@
+const path = require('path')
+
 const config = {
   projectName: 'member-system',
   date: '2020-5-27',
@@ -30,6 +32,10 @@ const config = {
     ]
   },
   defineConstants: {
+  },
+  alias: {
+    '@components': path.resolve(__dirname, '..', 'src/components'),
+    '@utils': path.resolve(__dirname, '..', 'src/utils'),
   },
   mini: {
     postcss: {
@@ -65,6 +71,7 @@ const config = {
     }
   },
   h5: {
+    esnextModules: ['taro-ui'],
     publicPath: '/',
     staticDirectory: 'static',
     postcss: {
