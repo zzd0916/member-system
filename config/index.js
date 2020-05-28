@@ -37,6 +37,9 @@ const config = {
     '@components': path.resolve(__dirname, '..', 'src/components'),
     '@utils': path.resolve(__dirname, '..', 'src/utils'),
   },
+  resolve: {
+    extensions: ['.ts','.js', '.tsx', '.json']
+  },
   mini: {
     postcss: {
       autoprefixer: {

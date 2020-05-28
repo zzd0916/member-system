@@ -2,7 +2,8 @@ import zh from './languages/zh'
 import en from './languages/en'
 import ja from './languages/ja'
 import Taro from '@tarojs/taro'
-import { http, util, config, stroage } from '@utils'
+import {util, config, stroage } from '@utils'
+import { http } from './http'
 import { getStorageByName, setStorageSync } from './stroage'
 
 const lang = { zh, en, ja };
@@ -19,22 +20,25 @@ export default {
     key.forEach(k => {
       s.push(l[k] ? l[k] : '#ERROR#');
     });
+    console.log(s.join(''))
     return s.join('');
   },
   getLng() {
     let lng = getStorageByName('_lng_version_');
     if(!lng){
       const { language } = Taro.getSystemInfoSync();
+      console.log( language )
       lng = language.split('-')[0];
       setStorageSync('_lng_version_', lng);
     }
     return lng ? lng : 'zh';
   },
-  async setLng(__lng) {
+  setLng(__lng) {
     setStorageSync('_lng_version_', __lng);
     // 每次切换语言需要重新获取配置参数
-    const { data } = await http.get('/config', { __lng });
-    setStorageSync('config', data);
+    // console.log(http)
+    // const { data } = await http.get('/config', { __lng });
+    // setStorageSync('config', data);
     location.reload();
   },
 }

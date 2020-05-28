@@ -1,22 +1,24 @@
 import { ComponentType } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
+import { View, Text, Image } from '@tarojs/components'
 import { observer, inject } from '@tarojs/mobx'
-import {  auth, lang } from '@utils'
+import { AtForm, AtInput, AtButton } from 'taro-ui'
 
 import './login.scss'
 
 type PageStateProps = {
-  counterStore: {
-    counter: number,
-    increment: Function,
-    decrement: Function,
-    incrementAsync: Function
-  },
   loginStore: {
     form: Object,
-    languages:Array,
+    languages:Array<any>,
     activeLang: string,
     changeForm: Function
+  },
+  langStore: {
+    language: string,
+    languages: object,
+    langPackage: Function,
+    getLng: Function,
+    setLng: Function
   },
   loginType?: string
 }
@@ -25,7 +27,7 @@ interface Login {
   props: PageStateProps;
 }
 
-@inject('loginStore')
+@inject('loginStore','langStore')
 @observer
 class Login extends Component {
 
@@ -40,58 +42,124 @@ class Login extends Component {
     navigationBarTitleText: '登陆页面'
   }
 
+  constructor () {
+    super(...arguments)
+    this.state = {
+      phone: '',
+      code: '',
+    }
+    this.sendCode.bind(this)
+  }
 
   componentWillMount () { 
-    console.log('login componentWillMount')
+    // console.log('login componentWillMount')
   }
 
   componentWillReact () {
-    console.log('login componentWillReact')
+    // console.log('login componentWillReact')
   }
 
   componentDidMount () { 
-    console.log('login componentDidMount')
+    // console.log('login componentDidMount')
   }
 
   componentWillUnmount () { 
-    console.log('login componentWillUnmount')
+    // console.log('login componentWillUnmount')
   }
 
   componentDidShow () { 
-    console.log('login componentDidShow')
+    // console.log('login componentDidShow')
   }
 
   componentDidHide () { 
-    console.log('login componentDidHide')
+    // console.log('login componentDidHide')
   }
 
-
+  handlePhoneChange (e) {
+    this.setState({
+      phone: e
+    })
+    // return e.target.value
+  }
+  handleCodeChange (e) {
+    this.setState({
+      code: e
+    })
+    // return e.target.value
+  }
+  onLogin (event) {
+    console.log(this.state)
+  }
   back() {
     Taro.navigateTo({
       url: '/pages/index/index'
     })
   }
+  goToPage(){
 
-  setLang(val) {
-
+  }
+  setLang(val:string) {
+    const { langStore } = this.props
+    langStore.setLng(val)
+  }
+  sendCode (e) {
+    e.preventDefault();
+    console.log("sendCode")
+  }
+  goToRegisterPage() {
+    Taro.navigateTo({
+      url: '/pages/register/register'
+    })
   }
   render () {
     const {loginStore } = this.props;
-    // onClick={ _ => this.setLng(item.value) } 
+    const {langStore } = this.props;
     return (
-      <View className='block'>
-       
+        <View className='login'>
+          <View className='login-title'>
+            <Text>{langStore.getByKey('member')+ `${langStore.getLng() === 'en' ? ' ' : ''}` +langStore.getByKey('login')}</Text>
+          </View>
+          <AtForm
+          >
+          <View className='form-item'>
+            <AtInput 
+              name='phone' 
+              title={langStore.getByKey('phone')} 
+              type='phone' 
+              placeholder={langStore.getByKey('phone')} 
+              value={this.state.phone} 
+              focus
+              onChange={this.handlePhoneChange.bind(this)} 
+            />
+          </View>
+          <View className='form-item'>
+            <AtInput 
+              name='value' 
+              title={langStore.getByKey('validCode')} 
+              type='number' 
+              placeholder={langStore.getByKey('validCode')} 
+              value={this.state.code} 
+              maxLength={6}
+              onChange={this.handleCodeChange.bind(this)} 
+            >
+            <AtButton onClick = {this.sendCode}>{langStore.getByKey('validCode')} </AtButton>
+            </AtInput>
+          </View>
+          <View className='form-item'>
+            <AtButton onClick={this.onLogin.bind(this)} >{ langStore.getByKey('login')}</AtButton>
+            <AtButton onClick={this.goToRegisterPage.bind(this)}>注册</AtButton>
+          </View>
+        </AtForm>
         <View className='at-row at-row__justify--around' style='margin-top:20px;text-align:center'>
           {
             loginStore.languages.map( (item ) => {
-              let cName = item.value === loginStore.activeLang ? 'at-col border-bottom' : 'at-col';
+              let cName = item.value ===  langStore.getLng() ? 'at-col language-active' : 'at-col';
               return (
-                <View className={cName} onClick={this.setLang(item.value)} >
+                <View className={cName} onClick={this.setLang.bind(this,item.value)} >
                 {item.text}
               </View>
               )
             })
-           
           }
         </View>
       </View>

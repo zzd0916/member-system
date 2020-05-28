@@ -4,4 +4,4 @@ export { default as city } from './citys';
 export { default as http } from './http';
 export { default as format } from './format';
 export { default as config } from './config';
-export { default as lang } from './language';
+export { default as lang } from './lang';

@@ -102,10 +102,10 @@ class TaroRequest {
   };
 }
 
-const TaroRequestInstance = new TaroRequest();
+const http = new TaroRequest();
 
 /* 请求拦截器 */
-TaroRequestInstance.requestInterceptor(function(config) {
+http.requestInterceptor(function(config) {
   if (config.header) {
     config.header['content-type'] =
       'application/x-www-form-urlencoded;charset=utf-8';
@@ -143,10 +143,10 @@ function handleRes(res: Taro.request.SuccessCallbackResult<apiDataType>) {
   }
 }
 
-TaroRequestInstance.responseInterceptor(handleRes, err => {
+http.responseInterceptor(handleRes, err => {
   return Promise.reject(err);
 });
 
 export default {
-  TaroRequestInstance
+  http
 };

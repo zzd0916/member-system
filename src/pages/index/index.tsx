@@ -2,11 +2,8 @@ import { ComponentType } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Button, Text } from '@tarojs/components'
 import { observer, inject } from '@tarojs/mobx'
-import { showBusy, showSuccess } from '@utils/toast'
-
-import { 
-  AtFab 
-} from 'taro-ui'
+import { showBusy, showSuccess } from '../../utils/toast'
+import { AtMessage } from 'taro-ui'
 
 import './index.scss'
 
@@ -38,6 +35,10 @@ class Index extends Component {
     navigationBarTitleText: '首页'
   }
 
+  constructor() {
+    super(...arguments);
+    this.toLogin = this.toLogin.bind(this);
+  }
   componentWillMount () { 
     console.log('componentWillMount')
   }
@@ -62,42 +63,52 @@ class Index extends Component {
     console.log('componentDidHide')
   }
 
-  // increment = () => {
-  //   const { counterStore } = this.props
-  //   counterStore.increment()
-  // }
+  increment = () => {
+    const { counterStore } = this.props
+    counterStore.increment()
+  }
 
-  // decrement = () => {
-  //   const { counterStore } = this.props
-  //   counterStore.decrement()
-  // }
+  decrement = () => {
+    const { counterStore } = this.props
+    counterStore.decrement()
+  }
 
-  // incrementAsync = () => {
-  //   const { counterStore } = this.props
-  //   counterStore.incrementAsync()
-  // }
+  incrementAsync = () => {
+    const { counterStore } = this.props
+    counterStore.incrementAsync()
+  }
+
+  handleClick (type) {
+    Taro.atMessage({
+      'message': '消息通知',
+      'type': type,
+    })
+  }
 
   showTal () {
     showBusy("恭喜您，弹窗成功");
   }
   toLogin () {
-    Taro.navigateTo({
-      url: '/pages/login/login'
+    Taro.atMessage({
+      'message': '跳转成功',
+      'type': 'success',
     })
+    setTimeout( () => {
+      Taro.navigateTo({
+        url: '/pages/login/login'
+      })
+    },1000)
   }
   render () {
     const { counterStore: { counter } } = this.props
     return (
       <View className='index'>
-        {/* <Button onClick={this.increment}>+</Button>
+        <Button onClick={this.increment}>+</Button>
         <Button onClick={this.decrement}>-</Button>
-        <Button onClick={this.incrementAsync}>Add Async</Button> */}
+        <Button onClick={this.incrementAsync}>Add Async</Button>
+        <AtMessage />
         <Button onClick={this.toLogin}>登陆</Button>
         <Text>{counter}</Text>
-        <View className='at-icon at-icon-settings'></View>
-        <AtFab>
-  <Text className='at-fab__icon at-icon at-icon-menu'></Text>
-</AtFab>
       </View>
     )
   }

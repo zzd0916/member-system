@@ -4,19 +4,21 @@ import Index from './pages/index'
 
 import counterStore from './store/counter'
 import loginStore from './store/login'
+import langStore from './store/lang'
 
 import './app.scss'
 import 'taro-ui/dist/style/index.scss' // 全局引入taro-ui
 
 // 如果需要在 h5 环境中开启 React Devtools
 // 取消以下注释：
-// if (process.env.NODE_ENV !== 'production' && process.env.TARO_ENV === 'h5')  {
-//   require('nerv-devtools')
-// }
+if (process.env.NODE_ENV !== 'production' && process.env.TARO_ENV === 'h5')  {
+  require('nerv-devtools')
+}
 
 const store = {
   counterStore,
-  loginStore
+  loginStore,
+  langStore,
 }
 
 class App extends Component {
@@ -31,7 +33,8 @@ class App extends Component {
   config: Config = {
     pages: [
       'pages/index/index',
-      'pages/login/login'
+      'pages/login/login',
+      'pages/register/register'
     ],
     window: {
       backgroundTextStyle: 'light',
