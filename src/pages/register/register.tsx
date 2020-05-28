@@ -164,7 +164,6 @@ class Register extends Component {
             />
           </View>
           <View className='form-item'>
-            <label>生日</label>
             <View>
               <Picker mode='date' onChange={this.onDateChange}>
                 <AtList>
@@ -174,7 +173,6 @@ class Register extends Component {
             </View>
           </View>
           <View className='form-item'>
-            <Text>性别：</Text>
             {
               this.state.sexArray.map (item => {
                 return <Radio value={item.value} checked={item.value === this.state.sex ? true: false }>{item.name}</Radio>
