@@ -2,9 +2,12 @@ import { ComponentType } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Text, Image } from '@tarojs/components'
 import { observer, inject } from '@tarojs/mobx'
-import { AtForm, AtInput, AtButton } from 'taro-ui'
+import { AtForm, AtInput, AtButton, AtAvatar } from 'taro-ui'
+import { http, config } from '@utils'
+import { login, sendCode, loginProps, sendCodeProps } from '@api/loginApi'
 
 import './login.scss'
+import { toast } from '@utils'
 
 type PageStateProps = {
   loginStore: {
@@ -19,8 +22,7 @@ type PageStateProps = {
     langPackage: Function,
     getLng: Function,
     setLng: Function
-  },
-  loginType?: string
+  }
 }
 
 interface Login {
@@ -39,7 +41,8 @@ class Login extends Component {
    * 提示和声明 navigationBarTextStyle: 'black' | 'white' 类型冲突, 需要显示声明类型
    */
   config: Config = {
-    navigationBarTitleText: '登陆页面'
+    navigationBarTitleText: '登陆页面',
+    navigationBarBackgroundColor: '#000'
   }
 
   constructor () {
@@ -72,7 +75,13 @@ class Login extends Component {
   }
 
   componentDidHide () { 
-    // console.log('login componentDidHide')
+    console.log('login componentDidHide')
+  //   this.setState = ({
+  //     phone: '',
+  //     code: ''
+  //   }, function() {
+  //     console.log(this.state)
+  //   })
   }
 
   handlePhoneChange (e) {
@@ -88,8 +97,59 @@ class Login extends Component {
     // return e.target.value
   }
   onLogin (event) {
-    console.log(this.state)
+    this.checkParams()
+    if(this.checkParams()) {
+      let params:loginProps = {
+        phone: this.state.phone,
+        code: this.state.code
+      }
+      const data = login(params).then( (res)=> {
+        Taro.reLaunch({
+          url: '/pages/index/index'
+        })
+      });
+      
+    }
   }
+  /**
+   * 检查参数是否合法
+   */
+  checkParams(): boolean {
+    const { phone, code } = this.state;
+   
+    let flag:boolean = true;
+    checkPhone() && checkCode();
+    return flag
+
+     /**
+     * 验证手机号格式
+    */
+    function checkPhone() {
+      if(!phone) {
+        toast.toast('手机号不能为空')
+        flag = false
+        return
+      }
+      return flag
+    }
+    /**
+     * 验证code是否为空
+    */
+    function checkCode() {
+      if(!code) {
+        toast.toast('验证码不能为空')
+        flag = false
+        return
+      }
+      if(code.length<3) {
+        toast.toast('验证码长度不正确')
+        flag = false
+        return
+      }
+    }
+  }
+  
+
   back() {
     Taro.navigateTo({
       url: '/pages/index/index'
@@ -104,7 +164,6 @@ class Login extends Component {
   }
   sendCode (e) {
     e.preventDefault();
-    console.log("sendCode")
   }
   goToRegisterPage() {
     Taro.navigateTo({
@@ -112,12 +171,15 @@ class Login extends Component {
     })
   }
   render () {
-    const {loginStore } = this.props;
-    const {langStore } = this.props;
+    const {loginStore, langStore } = this.props;
     return (
         <View className='login'>
           <View className='login-title'>
-            <Text>{langStore.getByKey('member')+ `${langStore.getLng() === 'en' ? ' ' : ''}` +langStore.getByKey('login')}</Text>
+            <AtAvatar image='http://holomotion.ntsports.tech/img/logo.png' size={'large'}></AtAvatar>
+            <View>{langStore.getByKey('title')}</View>
+          </View>
+          <View>
+          <div class="at-divider" style=""><div class="at-divider__content" style="color: rgb(45, 140, 240);">会員様登録</div><div class="at-divider__line" style="background-color: rgb(45, 140, 240);"></div></div>
           </View>
           <AtForm
           >
@@ -127,7 +189,7 @@ class Login extends Component {
               title={langStore.getByKey('phone')} 
               type='phone' 
               placeholder={langStore.getByKey('phone')} 
-              value={this.state.phone} 
+              value={this.state.phone}
               focus
               onChange={this.handlePhoneChange.bind(this)} 
             />
@@ -146,8 +208,8 @@ class Login extends Component {
             </AtInput>
           </View>
           <View className='form-item'>
-            <AtButton onClick={this.onLogin.bind(this)} >{ langStore.getByKey('login')}</AtButton>
-            <AtButton onClick={this.goToRegisterPage.bind(this)}>注册</AtButton>
+            <AtButton onClick={this.onLogin.bind(this)} type='primary' >{ langStore.getByKey('login')}</AtButton>
+            { config.allowReg == true ? <AtButton onClick={this.goToRegisterPage.bind(this)}>注册</AtButton> : null }
           </View>
         </AtForm>
         <View className='at-row at-row__justify--around' style='margin-top:20px;text-align:center'>

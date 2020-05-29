@@ -1,8 +1,8 @@
 import { ComponentType } from 'react'
-import Taro, { Component, Config } from '@tarojs/taro'
+import Taro, { Component, Config, showLoading } from '@tarojs/taro'
 import { View, Button, Text } from '@tarojs/components'
 import { observer, inject } from '@tarojs/mobx'
-import { showBusy, showSuccess } from '../../utils/toast'
+import { showLoading, showSuccess } from '@utils/toast'
 import { AtMessage } from 'taro-ui'
 
 import './index.scss'
@@ -31,13 +31,14 @@ class Index extends Component {
    * 对于像 navigationBarTextStyle: 'black' 这样的推导出的类型是 string
    * 提示和声明 navigationBarTextStyle: 'black' | 'white' 类型冲突, 需要显示声明类型
    */
+  
   config: Config = {
     navigationBarTitleText: '首页'
   }
 
   constructor() {
     super(...arguments);
-    this.toLogin = this.toLogin.bind(this);
+    // this.toLogin = this.toLogin.bind(this);
   }
   componentWillMount () { 
     console.log('componentWillMount')
@@ -63,30 +64,26 @@ class Index extends Component {
     console.log('componentDidHide')
   }
 
-  increment = () => {
-    const { counterStore } = this.props
-    counterStore.increment()
-  }
+  // increment = () => {
+  //   const { counterStore } = this.props
+  //   counterStore.increment()
+  // }
 
-  decrement = () => {
-    const { counterStore } = this.props
-    counterStore.decrement()
-  }
+  // decrement = () => {
+  //   const { counterStore } = this.props
+  //   counterStore.decrement()
+  // }
 
-  incrementAsync = () => {
-    const { counterStore } = this.props
-    counterStore.incrementAsync()
-  }
+  // incrementAsync = () => {
+  //   const { counterStore } = this.props
+  //   counterStore.incrementAsync()
+  // }
 
   handleClick (type) {
     Taro.atMessage({
       'message': '消息通知',
       'type': type,
     })
-  }
-
-  showTal () {
-    showBusy("恭喜您，弹窗成功");
   }
   toLogin () {
     Taro.atMessage({
@@ -100,15 +97,15 @@ class Index extends Component {
     },1000)
   }
   render () {
-    const { counterStore: { counter } } = this.props
+    // const { counterStore: { counter } } = this.props
     return (
       <View className='index'>
-        <Button onClick={this.increment}>+</Button>
+        {/* <Button onClick={this.increment}>+</Button>
         <Button onClick={this.decrement}>-</Button>
-        <Button onClick={this.incrementAsync}>Add Async</Button>
+        <Button onClick={this.incrementAsync}>Add Async</Button> */}
         <AtMessage />
         <Button onClick={this.toLogin}>登陆</Button>
-        <Text>{counter}</Text>
+        {/* <Text>{counter}</Text> */}
       </View>
     )
   }

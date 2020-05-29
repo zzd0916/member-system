@@ -1,70 +1,50 @@
-import { ComponentType } from 'react'
-import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Button, Text } from '@tarojs/components'
-import { observer, inject } from '@tarojs/mobx'
+import Taro, { Component } from '@tarojs/taro'
+import { View } from '@tarojs/components'
+import { AtNavBar, AtTabBar } from 'taro-ui'
+import { util, auth, lang } from '@utils'
+import './components.scss';
+import { inject, observer } from '@tarojs/mobx';
 
-import { 
-  AtFab 
-} from 'taro-ui'
-
-import './index.scss'
-
-type PageStateProps = {
-  counterStore: {
-    counter: number,
-    increment: Function,
-    decrement: Function,
-    incrementAsync: Function
-  }
-}
-
-interface Index {
-  props: PageStateProps;
-}
-
-@inject('counterStore')
+@inject('langStore')
 @observer
-class Index extends Component {
-
-  /**
-   * 指定config的类型声明为: Taro.Config
-   *
-   * 由于 typescript 对于 object 类型推导只能推出 Key 的基本类型
-   * 对于像 navigationBarTextStyle: 'black' 这样的推导出的类型是 string
-   * 提示和声明 navigationBarTextStyle: 'black' | 'white' 类型冲突, 需要显示声明类型
-   */
-  config: Config = {
-    navigationBarTitleText: '首页'
+export default class Layout extends Component {
+  static defaultProps = {
+    title: lang.getByKey(''),
+    btns:[
+      { title: lang.getByKey('home'), src: '/pages/home', iconType: 'home' },
+      { title: lang.getByKey('report'), src: '/pages/report/list', iconType: 'list' },
+      { title: lang.getByKey('account'), src: '/pages/account/home', iconType: 'user'},
+    ],
+  }
+  componentDidMount(){
+    // 登陆校验
+    if(!auth.isLogin()) {
+      util.reLaunch({ url: '/pages/login' });
+    }
   }
 
-  componentWillMount () { 
-    console.log('componentWillMount')
-  }
-
-  componentWillReact () {
-    console.log('componentWillReact')
-  }
-
-  componentDidMount () { 
-    console.log('componentDidMount')
-  }
-
-  componentWillUnmount () { 
-    console.log('componentWillUnmount')
-  }
-
-  componentDidShow () { 
-    console.log('componentDidShow')
-  }
-
-  componentDidHide () { 
-    console.log('componentDidHide')
-  }
   render () {
-    return (
-        <div>Layout</div>
-    )
+    const { title, btns, canBack, onReload, current = 0, noTabBar = false } = this.props
+    // console.log('title, btns, canBack, onReload, current', title, btns, canBack, onReload, current);
+    const hasFirstRight = typeof onReload === 'function';
+    const isBankFn = typeof canBack === 'function';
+    return (<View>
+      { !util.isWeb ? null : <AtNavBar fixed
+        title={ title }
+        leftText={ canBack ? lang.getByKey('back_btn') : null}
+        onClickLeftIcon={ _ => canBack ? isBankFn ? canBack() : Taro.navigateBack() : null }
+        leftIconType={ canBack ? 'chevron-left' : ''}
+        onClickRgIconSt={_ => hasFirstRight ? onReload() : null }
+        rightFirstIconType={ hasFirstRight ? 'reload' : '' } /> }
+      <View className='page' style={ util.isWx ? {marginTop:0} : {} }>
+      { this.props.children }
+      </View>
+      {noTabBar ? null : <AtTabBar
+        fixed
+        tabList={btns}
+        onClick={ i => util.reLaunch({ url: btns[i].src }) }
+        current={ current }
+      />}
+    </View>);
   }
 }
-
-export default Index  as ComponentType

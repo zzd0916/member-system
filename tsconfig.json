@@ -28,5 +28,13 @@
     "node_modules",
     "dist"
   ],
-  "compileOnSave": false
+  "compileOnSave": false,
+  "paths": {
+    "@utils": [
+      "src/utils"
+    ],
+    "@components": [
+      "src/components"
+    ]
+  },
 }

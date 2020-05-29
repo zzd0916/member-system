@@ -5,21 +5,23 @@ import ja from '../utils/languages/ja'
 import { getStorageByName, setStorageSync } from '../utils/stroage'
 
 const langStore = observable({
-  language: 'zh',
+  language: getStorageByName('_lng_version_')? getStorageByName('_lng_version_'): 'zh',
   languages: { zh, en, ja },
   langPackage (lang) {
     return this.languages[lang]
   },
-  getByKey(key, lng) {
+  getByKey(key: string, lng?: string): string {
     if(!lng) {
       lng = this.language
     }
     let l = this.langPackage(lng); 
     if(!l) return '语言版本不存在';
-    if(typeof key === 'string')
-      return l[key] ? l[key] : '未设置语言';
+    return l[key] ? l[key] : '未设置语言';
   },
   getLng() {
+    // if(getStorageByName('_lng_version_')) {
+    //   this.setLng(getStorageByName('_lng_version_'))
+    // } 
     return this.language ? this.language : 'zh';
   },
   setLng(__lng) {

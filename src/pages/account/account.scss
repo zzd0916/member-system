@@ -1,0 +1,23 @@
+.header{
+    margin: 30px;
+    padding: 30px;
+    // border-bottom: solid 2px #EEE;
+  
+    .realName {
+      font-size: 42px;
+      letter-spacing: 3px;
+    }
+  
+    .phone {
+      font-size: 32px;
+      letter-spacing: 3px;
+    }
+  }
+  .infoBtn{
+    display: inline-block;
+    text-align: center;
+    width: 80px;
+    white-space:normal;
+    vertical-align: middle;
+  }
+  

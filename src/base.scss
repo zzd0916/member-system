@@ -1,0 +1,91 @@
+@import "./setting.scss";
+
+.space {
+  height: 30px;
+  background-color: #EEE;
+}
+.page{
+  padding: 90px 0 110px 0;
+}
+.panel_title {
+  border-bottom: solid $bgcolor-light 2px;
+  padding: $padding-md;
+}
+.form_title {
+  padding: $padding-md 0 0 $padding-md;
+  color: #999;
+}
+
+.block {
+  padding: $padding-md;
+}
+.block-h {
+  padding: $padding-md 0;
+}
+.block-w {
+  padding: 0 $padding-md;
+}
+
+.margin-h {
+  margin: $padding-md 0;
+}
+
+.form_panel {
+  border-top: 1px #d6e4ef solid;
+  border-bottom: 1px #d6e4ef solid;
+}
+.form_item {
+  padding: $padding-sm 0;
+  border-bottom: 1px #d6e4ef solid;
+  margin: 0 $padding-md;
+  display: flex;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  .title {
+    color: #666;
+    width: 30%;
+    margin-right: $padding-sm;
+  }
+  .value {
+    width: 70%;
+    color: #000;
+    letter-spacing: 2px;
+  }
+}
+
+.list_panel {
+  border-top: 1px #d6e4ef solid;
+  border-bottom: 1px #d6e4ef solid;
+}
+.list_item {
+  padding: $padding-sm 0;
+  border-bottom: 1px #d6e4ef solid;
+  margin: 0 $padding-md;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.labelVal {
+  display: inline-block;
+  padding: 0 10px;
+
+  .label {
+    color: #999;
+    font-size: 14px;
+  }
+  .value {
+    color: #000;
+    font-size: 20px;
+  }
+}
+
+.picker {
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}

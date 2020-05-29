@@ -34,14 +34,41 @@ class App extends Component {
     pages: [
       'pages/index/index',
       'pages/login/login',
-      'pages/register/register'
+      'pages/register/register',
+
+      'pages/account/home',
+      // 'pages/account/detail',
+      // 'pages/account/pay',
+      // 'pages/account/buy',
+      
+      // '/pages/account/discount',
+
+      // 'pages/report/list',
+      // 'pages/report/detail',
     ],
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
       navigationBarTitleText: 'WeChat',
       navigationBarTextStyle: 'black'
-    }
+    },
+    // tabBar: {
+    //   color: '#000',
+    //   selectedColor: 'red',
+    //   list: [
+    //   {
+    //     pagePath: '/pages/login/login',
+    //     text: 'login'
+    //   },
+    //   {
+    //     pagePath: '/pages/register/register',
+    //     text: 'register'
+    //   },
+    //   {
+    //     pagePath: '/pages/index/index',
+    //     text: 'index'
+    //   }]
+    // }
   }
 
   componentDidMount () {}
