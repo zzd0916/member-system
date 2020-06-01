@@ -1,9 +1,7 @@
-import Taro from '@tarojs/taro'
-const isH5 =Taro.ENV_TYPE === 'h5'
 
-console.log(Taro.getEnv())
-// const isH5 = process.env.CLIENT_ENV === 'h5'
-console.log
+// const isH5 =Taro.ENV_TYPE === 'h5'
+
+const isH5 = process.env.CLIENT_ENV === 'h5'
 
 console.log(isH5)
 const HOST = '"https://miniapp.you.163.com"'

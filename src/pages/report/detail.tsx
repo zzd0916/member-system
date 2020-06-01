@@ -10,29 +10,29 @@ import './detail.scss'
 @observer
 export default class Detail extends Component {
   config = {
-    navigationBarTitleText: lang.getByKey('report'),
+    navigationBarTitleText: lng.get('report'),
   }
-  async componentDidMount () {
+  async componentDidMount() {
     const { _id = '' } = this.$router.params;
     // console.log('detail_id', this.$router, this.$router.params);
-    if(!_id || !_id.length){
-      await util.toast(lang.get('params_err_tip'));
+    if (!_id || !_id.length) {
+      await util.toast(lng.get('params_err_tip'));
       return;// util.reLaunch({ url: '/pages/report/list' }); // 暂时停在此页
     }
     this.fetch({ _id });
   }
-  fetch (search) {
+  fetch(search) {
     const { reportStore } = this.props
-    search.__lang = lang.getlang();
+    search.__lng = lng.getLng();
     reportStore.getData(search, async r => {
-      if(!r.data || !r.data._id){
-        await util.alert({ msg: lang.get(['report', 'no_exists']) });
+      if (!r.data || !r.data._id) {
+        await util.alert({ msg: lng.get(['report', 'no_exists']) });
         return;// util.reLaunch({ url: '/pages/report/list' });// 暂时停在此页
       }
     })
   }
 
-  onBuy(){
+  onBuy() {
     const { reportStore: { buyReport, data } } = this.props
     util.confirm({
       msg: `确认购买此报告吗?`,
@@ -46,44 +46,44 @@ export default class Detail extends Component {
     });
   }
 
-  render () {
+  render() {
     const { reportStore: { data } } = this.props
 
     return (
-      <Layout title={this.config.navigationBarTitleText} canBack={ _ => util.reLaunch({ url: '/pages/report/list' }) } noTabBar onReload={_ => location.reload() }>
-      <View className='at-row title_panel'>
-        <View className='at-col at-col-3'>
-          <View className='img'><Text style={{ fontSize:32,color:'red' }}>{ data.score_overall }</Text></View>
-        </View>
-        <View className='at-col at-col-9'>
-          <View className='title'>
-            { data.realName }
+      <Layout title={this.config.navigationBarTitleText} canBack={_ => util.reLaunch({ url: '/pages/report/list' })} noTabBar onReload={_ => location.reload()}>
+        <View className='at-row title_panel'>
+          <View className='at-col at-col-3'>
+            <View className='img'><Text style={{ fontSize: 32, color: 'red' }}>{data.score_overall}</Text></View>
           </View>
-          <View className='title'>
-          { data.date }
+          <View className='at-col at-col-9'>
+            <View className='title'>
+              {data.realName}
+            </View>
+            <View className='title'>
+              {data.date}
+            </View>
           </View>
         </View>
-      </View>
-      <View className='at-row state_panel'>
-        <View className='at-col item'>
-          <View><Text className='title'>{ data.score_arom }</Text></View>
-          <View>{lang.get('arom')}</View>
+        <View className='at-row state_panel'>
+          <View className='at-col item'>
+            <View><Text className='title'>{data.score_arom}</Text></View>
+            <View>{lng.get('arom')}</View>
+          </View>
+          <View className='at-col item'>
+            <View><Text className='title'>{data.score_stability}</Text></View>
+            <View>{lng.get('stability')}</View>
+          </View>
+          <View className='at-col item'>
+            <View><Text className='title'>{data.score_symmetry}</Text></View>
+            <View>{lng.get('symmetry')}</View>
+          </View>
         </View>
-        <View className='at-col item'>
-          <View><Text className='title'>{ data.score_stability }</Text></View>
-          <View>{lang.get('stability')}</View>
-        </View>
-        <View className='at-col item'>
-          <View><Text className='title'>{ data.score_symmetry }</Text></View>
-          <View>{lang.get('symmetry')}</View>
-        </View>
-      </View>
 
-      {!data.url ?
-        <View className='block'>
-          <AtButton type='secondary' onClick={ _ => this.onBuy() }>查看报告</AtButton>
-        </View> :
-        <WebView src={data.url} style='margin-top:50px' />}
+        {!data.url ?
+          <View className='block'>
+            <AtButton type='secondary' onClick={_ => this.onBuy()}>查看报告</AtButton>
+          </View> :
+          <WebView src={data.url} style='margin-top:50px' />}
       </Layout>
     )
   }

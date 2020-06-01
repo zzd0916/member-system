@@ -2,17 +2,16 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, Text, Image } from '@tarojs/components'
 import { observer, inject } from '@tarojs/mobx'
 import { AtLoadMore, AtIcon, AtButton, AtTabs, AtTabsPane } from 'taro-ui'
-import { Layout, ReportSearch } from '@components'
-import BaseListComponent from '@components/baseListComponent'
-import { cfg, util, lng } from '@utils'
+import { Layout, BaseList, ReportSearch } from '@components'
+import { cfg, util, lang } from '@utils'
 import './list.scss'
 
-@inject('reportStore', 'langStore')
+@inject('reportStore','langStore')
 @observer
-export default class extends BaseListComponent {
+export default class extends BaseList {
   storeName = 'reportStore';
   config = {
-    navigationBarTitleText: langStore.getByKey('report'),
+    navigationBarTitleText: lang.getValByName('report'),
     enablePullDownRefresh: true,
   }
   
@@ -38,8 +37,16 @@ export default class extends BaseListComponent {
   }
 
   render () {
-    const { reportStore: { list, ps, count } } = this.props
+    const { reportStore: { list, ps, count }, langStore } = this.props
     const { moreStatus, tabCurrIdx } = this.state;
+
+    const tabList = [{
+      title: langStore.getByKey('report_type_all')
+    }, {
+      title: langStore.getByKey('report_type_no')
+    }, {
+      title: langStore.getByKey('report_type_yes')
+    }];
 
     return (
       <Layout title={this.config.navigationBarTitleText} current={1} onReload={ _ => this.fetch() }>

@@ -1,4 +1,4 @@
-import { http } from '@utils'
+import http from '@utils/servers'
 
 export interface loginProps {
     phone: number;
@@ -6,7 +6,6 @@ export interface loginProps {
 }
 export interface sendCodeProps {
     phone: number;
-    code: number;
 }
 
 export const login =  async (parms: loginProps) => {

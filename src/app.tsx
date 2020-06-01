@@ -5,6 +5,7 @@ import Index from './pages/index'
 import counterStore from './store/counter'
 import loginStore from './store/login'
 import langStore from './store/lang'
+import reportStore from './store/report'
 
 import './app.scss'
 import 'taro-ui/dist/style/index.scss' // 全局引入taro-ui
@@ -19,6 +20,7 @@ const store = {
   counterStore,
   loginStore,
   langStore,
+  reportStore
 }
 
 class App extends Component {
@@ -36,6 +38,7 @@ class App extends Component {
       'pages/login/login',
       'pages/register/register',
 
+      'pages/home/home',
       'pages/account/home',
       // 'pages/account/detail',
       // 'pages/account/pay',
@@ -43,7 +46,7 @@ class App extends Component {
       
       // '/pages/account/discount',
 
-      // 'pages/report/list',
+      'pages/report/list',
       // 'pages/report/detail',
     ],
     window: {

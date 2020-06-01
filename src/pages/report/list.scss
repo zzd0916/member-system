@@ -1,0 +1,41 @@
+.list_row {
+    margin-top: 30px;
+    border-bottom: solid 30px #EEE;
+    text-align:center;
+    font-size: 24px;
+  
+    .title {
+      font-size: 28px;
+      padding: 0 25px;
+    }
+  
+    .img {
+      margin: 0 0 20px 20px;
+      background-color: #EEE;
+      height: 120px;
+      line-height: 120px;
+      font-size: 32px;
+      font-weight: bold;
+    }
+  }
+  
+  .state_panel {
+    text-align: center;
+  
+    .item {
+      border-right: solid 1px #EEE;
+      font-size: 24px;
+      color: #AAA;
+  
+      .title {
+        padding:0 15px;
+        font-size: 26px;
+        color: #000;
+      }
+  
+      &:last-child {
+        border-right: 0;
+      }
+    }
+  }
+  

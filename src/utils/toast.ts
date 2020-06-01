@@ -110,13 +110,5 @@ export default {
         // console.log(res.errMsg)
       }
     })
-  },
-  wxPay(wxJsApiParam){
-    return new Promise(resolve => {
-      if(typeof wxJsApiParam === 'string') wxJsApiParam = JSON.parse(wxJsApiParam);
-      WeixinJSBridge.invoke('getBrandWCPayRequest', wxJsApiParam, r => {
-          return resolve(r.err_msg === 'get_brand_wcpay_request:ok');
-      });
-    })
   }
 }
