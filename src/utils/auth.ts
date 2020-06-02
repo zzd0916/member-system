@@ -65,7 +65,7 @@ export default {
     this.setLogin({});
     // location.href = '/';
     Taro.reLaunch({
-      url: '/pages/login'
+      url: '/pages/login/login'
     })
   },
   /**

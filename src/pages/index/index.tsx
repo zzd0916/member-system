@@ -1,9 +1,10 @@
 import { ComponentType } from 'react'
-import Taro, { Component, Config, showLoading } from '@tarojs/taro'
+import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Button, Text } from '@tarojs/components'
 import { observer, inject } from '@tarojs/mobx'
-import { showLoading, showSuccess } from '@utils/toast'
-import { AtMessage } from 'taro-ui'
+// import { showLoading, showSuccess } from '@utils/toast'
+import { config } from '@utils'
+import { AtMessage, AtSwitch, AtForm } from 'taro-ui'
 
 import './index.scss'
 
@@ -36,37 +37,37 @@ class Index extends Component {
     navigationBarTitleText: '首页'
   }
 
-  constructor() {
-    super(...arguments);
-    // this.toLogin = this.toLogin.bind(this);
+  state = {
+    value: config.allowReg()
   }
+
   componentWillMount () { 
-    console.log('componentWillMount')
+    // console.log('componentWillMount')
   }
 
   componentWillReact () {
-    console.log('componentWillReact')
+    // console.log('componentWillReact')
   }
 
   componentDidMount () { 
-    console.log('componentDidMount')
+    // console.log('componentDidMount')
   }
 
   componentWillUnmount () { 
-    console.log('componentWillUnmount')
+    // console.log('componentWillUnmount')
   }
 
   componentDidShow () { 
-    console.log('componentDidShow')
+    // console.log('componentDidShow')
   }
 
   componentDidHide () { 
-    console.log('componentDidHide')
+    // console.log('componentDidHide')
   }
 
   // increment = () => {
   //   const { counterStore } = this.props
-  //   counterStore.increment()
+  //   counterStore.increment(4)
   // }
 
   // decrement = () => {
@@ -96,8 +97,13 @@ class Index extends Component {
       })
     },1000)
   }
+
+  setIsAllowReg(value) {
+    config.setIsAllowReg(value)
+    this.setState({ value})
+  }
   render () {
-    // const { counterStore: { counter } } = this.props
+    const { counterStore: { counter } } = this.props
     return (
       <View className='index'>
         {/* <Button onClick={this.increment}>+</Button>
@@ -105,6 +111,9 @@ class Index extends Component {
         <Button onClick={this.incrementAsync}>Add Async</Button> */}
         <AtMessage />
         <Button onClick={this.toLogin}>登陆</Button>
+        <AtForm>
+          <AtSwitch title='开启注册' checked={this.state.value} onChange={this.setIsAllowReg.bind(this)} />
+        </AtForm>
         {/* <Text>{counter}</Text> */}
       </View>
     )

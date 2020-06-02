@@ -1,45 +1,58 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
 import { View, Text, Image } from '@tarojs/components'
 import { observer, inject } from '@tarojs/mobx'
-import { AtLoadMore, AtIcon, AtButton, AtTabs, AtTabsPane } from 'taro-ui'
-import { Layout, BaseList, ReportSearch } from '@components'
-import { cfg, util, lang } from '@utils'
+import { AtLoadMore,  AtTabs } from 'taro-ui'
+import { Layout, BaseList } from '@components'
+import { getList } from '@api/reportApi'
+import { lang, toast } from '@utils'
+
 import './list.scss'
 
-@inject('reportStore','langStore')
+@inject('reportStore', 'langStore')
 @observer
 export default class extends BaseList {
-  storeName = 'reportStore';
   config = {
     navigationBarTitleText: lang.getValByName('report'),
     enablePullDownRefresh: true,
   }
-  
+
   state = {
-    ...this.state,
+    list: []
+    count: 0,
+    ps: 1,
     tabCurrIdx: 0,
   }
-  async componentDidMount () {
-    this.fetch({ p:1 });
+
+  async componentDidMount() {
+    this.fetch({ p: 1 });
   }
-  fetch (search) {
-    //console.log('fetch:', search);
+
+  fetch(s={p:1, state: this.state.tabCurrIdx}) {
     const { reportStore } = this.props
-    reportStore.getList(search)
+    getList(s).then(res=> {
+      if(res) {
+        const { success, data:{list} } = res
+        if(success) {
+          reportStore.setList(list)
+        }
+      } else {
+        toast.toast("暂无数据")
+      }
+    });
   }
-  onClick({ _id }){
+  
+  goDetail({ _id }) {
     // console.log('list_onclick', _id);
-    Taro.navigateTo({ url: '/pages/report/detail?_id='+ _id })
+    Taro.navigateTo({ url: '/pages/report/detail?_id=' + _id })
   }
-  setTab(tabCurrIdx){
+  setTab(tabCurrIdx) {
     this.setState({ tabCurrIdx })
     this.fetch({ p:1, state: tabCurrIdx });
   }
 
-  render () {
-    const { reportStore: { list, ps, count }, langStore } = this.props
+  render() {
+    const {reportStore, reportStore: { list, count, ps } , langStore } = this.props
     const { moreStatus, tabCurrIdx } = this.state;
-
     const tabList = [{
       title: langStore.getByKey('report_type_all')
     }, {
@@ -49,39 +62,42 @@ export default class extends BaseList {
     }];
 
     return (
-      <Layout title={this.config.navigationBarTitleText} current={1} onReload={ _ => this.fetch() }>
-      <AtTabs style="margin-top:-30px" current={ tabCurrIdx } tabList={tabList} onClick={ tabCurrIdx => this.setTab(tabCurrIdx) }>
-      </AtTabs>
+      <Layout title={this.config.navigationBarTitleText}  current={1} onReload={_ => this.fetch()}>
+        <AtTabs style="margin-top:-30px" current={tabCurrIdx} tabList={tabList} onClick={tabCurrIdx => this.setTab(tabCurrIdx)}>
+        </AtTabs>
         <View>
-          <reportSearch onSearch={ search => this.fetch({ p:1, ...search }) } />
-        { list.map(l => <View key={ l._id } onClick={ _ => this.onClick(l) } className='at-row list_row'>
-          <View className='at-col at-col-3'>
-            <View className='img'><Text style={{ fontSize:24,color:'red' }}>{ l.score_overall }</Text></View>
+          {
+            list.map(l => <View key={l._id} onClick={_ => this.goDetail(l)} className='at-row list_row'>
+              <View className='at-col at-col-3'>
+                <View className='img'><Text style={{ fontSize: 24, color: 'red' }}>{l.score_overall}</Text></View>
+              </View>
+              <View className='at-col at-col-9'>
+                <View className='at-row title'>
+                  {l.realName} | {l.date}
+                </View>
+                <View className='at-row state_panel'>
+                  <View className='at-col item'>
+                    <View><Text className='title'>{l.score_arom}</Text></View>
+                    <View>{langStore.getByKey('arom')}</View>
+                  </View>
+                  <View className='at-col item'>
+                    <View><Text className='title'>{l.score_stability}</Text></View>
+                    <View>{langStore.getByKey('stability')}</View>
+                  </View>
+                  <View className='at-col item'>
+                    <View><Text className='title'>{l.score_symmetry}</Text></View>
+                    <View>{langStore.getByKey('symmetry')}</View>
+                  </View>
+                </View>
+              </View>
+            }
+
           </View>
-          <View className='at-col at-col-9'>
-            <View className='at-row title'>
-              { l.realName } | { l.date }
-            </View>
-            <View className='at-row state_panel'>
-              <View className='at-col item'>
-                <View><Text className='title'>{ l.score_arom }</Text></View>
-                <View>{langStore.getByKey('arom')}</View>
-              </View>
-              <View className='at-col item'>
-                <View><Text className='title'>{ l.score_stability }</Text></View>
-                <View>{langStore.getByKey('stability')}</View>
-              </View>
-              <View className='at-col item'>
-                <View><Text className='title'>{ l.score_symmetry }</Text></View>
-                <View>{langStore.getByKey('symmetry')}</View>
-              </View>
-            </View>
-          </View>
-        </View>)}
-        <AtLoadMore
-          onClick={ _ => this.onMore() }
-          status={ count < ps ? 'noMore' : moreStatus }
-        />
+          }
+          <AtLoadMore
+            onClick={_ => this.onMore()}
+            status={count < ps ? 'noMore' : moreStatus}
+          />
         </View>
       </Layout>
     )

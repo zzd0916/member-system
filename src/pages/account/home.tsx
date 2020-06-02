@@ -56,7 +56,7 @@ class Home extends Component {
             msg: '确定要退出登录吗?',
             async success() {
                 // 设置缓存
-                auth.logout(1)
+                auth.logout()
             }
         })
     }

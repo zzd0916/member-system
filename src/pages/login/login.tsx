@@ -5,7 +5,7 @@ import { observer, inject } from '@tarojs/mobx'
 import { AtForm, AtInput, AtButton, AtAvatar } from 'taro-ui'
 import { config, toast, auth, util } from '@utils'
 import { getStorageByName, setStorageSync } from '@utils/stroage'
-import { login, sendCode, loginProps, sendCodeProps } from '@api/loginApi'
+import { login, sendCode, ILogin, sendCodeProps } from '@api/loginApi'
 import { LangProps } from '@store/lang.ts'
 import { ChooseLanguage } from '@components'
 
@@ -13,7 +13,7 @@ import './login.scss'
 
 interface IProps {
   props: {
-    langStore: LangProps
+    langStore: ILogin
   };
 }
 
@@ -182,7 +182,7 @@ class Login extends Component<IProps, IState> {
     const phoneTitle = langStore.getByKey('phone')
     const codeTitle = langStore.getByKey('validCode')
     const loginTitle = langStore.getByKey('login')
-
+    const isAllowReg = config.allowReg();
     return (
       <View className='login'>
         <View className='login-title'>
@@ -223,7 +223,7 @@ class Login extends Component<IProps, IState> {
           </View>
           <View className='form-item'>
             <AtButton onClick={this.onLogin.bind(this)} type='primary' >{loginTitle}</AtButton>
-            {config.allowReg == true ? <AtButton onClick={this.goToRegisterPage.bind(this)}>注册</AtButton> : null}
+            {isAllowReg == true ? <AtButton onClick={this.goToRegisterPage.bind(this)}>注册</AtButton> : null}
           </View>
         </AtForm>
         <ChooseLanguage />

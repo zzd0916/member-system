@@ -19,7 +19,7 @@ export default {
       url
     });
   },
-  showLoading(title='全力加载ing...') {
+  showLoading(title='加载ing...') {
     Taro.showLoading({
       title
     })

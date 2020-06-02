@@ -47,7 +47,7 @@ class App extends Component {
       // '/pages/account/discount',
 
       'pages/report/list',
-      // 'pages/report/detail',
+      'pages/report/detail',
     ],
     window: {
       backgroundTextStyle: 'light',

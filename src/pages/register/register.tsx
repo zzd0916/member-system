@@ -1,8 +1,8 @@
 import { ComponentType } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Text, Picker, Radio   } from '@tarojs/components'
+import { View, Text, Picker, Radio } from '@tarojs/components'
 import { observer, inject } from '@tarojs/mobx'
-import { AtForm, AtInput, AtButton, AtList, AtListItem, AtRadio } from 'taro-ui'
+import { AtForm, AtInput, AtButton, AtList, AtListItem, AtAvatar, AtRadio } from 'taro-ui'
 // import {  auth, lang } from '@utils'
 // import {  auth, lang, http } from '../../utils'
 
@@ -40,41 +40,42 @@ class Register extends Component {
     navigationBarTitleText: '登陆页面'
   }
 
-  constructor () {
+  constructor() {
     super(...arguments)
     this.state = {
+      title: "用户注册",
       name: '',
-      idCard:''
+      idCard: ''
       phone: '',
       code: '',
       sexArray: [
-        {value: 'man', name: '男'},
-        {value: 'woman', name: '女'},
+        { label: '男', value: 'man' },
+        { label: '女', value: 'woman' },
       ],
       sex: 'man',
       selector: ['新清泰克', '智能健身房', '巴西', '日本'],
-      selectorChecked: '美国',
+      selectorChecked: '新清泰克',
       timeSel: '12:01',
       dateSel: '2018-04-22'
     }
   }
 
-  componentWillMount () { 
+  componentWillMount() {
   }
 
-  componentWillReact () {
+  componentWillReact() {
   }
 
-  componentDidMount () { 
+  componentDidMount() {
   }
 
-  componentWillUnmount () { 
+  componentWillUnmount() {
   }
 
-  componentDidShow () { 
+  componentDidShow() {
   }
 
-  componentDidHide () { 
+  componentDidHide() {
   }
   handleNameChange(e) {
     this.setState({
@@ -86,19 +87,19 @@ class Register extends Component {
       idCard: e
     })
   }
-  handlePhoneChange (e) {
+  handlePhoneChange(e) {
     this.setState({
       phone: e
     })
     // return e.target.value
   }
-  handleCodeChange (e) {
+  handleCodeChange(e) {
     this.setState({
       code: e
     })
     // return e.target.value
   }
-  onSubmit (event) {
+  onSubmit(event) {
     console.log(this.state)
   }
   back() {
@@ -121,67 +122,75 @@ class Register extends Component {
       dateSel: e.detail.value
     })
   }
-  render () {
+  onSexChange = v => {
+    console.log('radio发生change事件，携带value值为：', v)
+    this.setState({ sex: v })
+  }
+  render() {
     // const {RegisterStore } = this.props;
+    const { title, sex, sexArray, selector, name, idCard, phone, dateSel } = this.state
     return (
-        <View className='register'>
-          <View className='register-title'>
-            <Text>用户注册</Text>
-          </View>
-          <AtForm
-            onSubmit={this.onSubmit.bind(this)}
-          >
+      <View className='register'>
+        <View className='register-title'>
+          <AtAvatar image='http://holomotion.ntsports.tech/img/logo.png' size={'large'}></AtAvatar>
+          <View>{title}</View>
+        </View>
+        <AtForm
+          onSubmit={this.onSubmit.bind(this)}
+        >
           <View className='form-item'>
-            <AtInput 
-              name='name' 
+            <AtInput
+              name='name'
               title='姓名'
-              type='text' 
-              placeholder='请输入姓名' 
-              value={this.state.name} 
-              onChange={this.handleNameChange.bind(this)} 
+              type='text'
+              placeholder='请输入姓名'
+              value={name}
+              maxLength={20}
+              onChange={this.handleNameChange.bind(this)}
             />
           </View>
           <View className='form-item'>
-            <AtInput 
-              name='idCard' 
-              title='身份证' 
-              type='idcard' 
+            <AtInput
+              name='idCard'
+              title='身份证'
+              type='idcard'
               placeholder='请输入身份证'
-              value={this.state.idCard} 
+              value={idCard}
               maxLength={18}
-              onChange={this.handleIdcardChange.bind(this)} 
+              onChange={this.handleIdcardChange.bind(this)}
             >
             </AtInput>
           </View>
           <View className='form-item'>
-            <AtInput 
-              name='phopne' 
+            <AtInput
+              name='phopne'
               title='手机号'
-              type='phone' 
+              type='phone'
               placeholder='请输入手机号'
-              value={this.state.phone} 
-              onChange={this.handlePhoneChange.bind(this)} 
+              value={phone}
+              onChange={this.handlePhoneChange.bind(this)}
+            />
+          </View>
+          <View className='form-item'>
+            <Text className='at-input__title sex-label'>请选择性别</Text>
+            <AtRadio
+              options={sexArray}
+              value={sex}
+              onClick={this.onSexChange.bind(this)}
             />
           </View>
           <View className='form-item'>
             <View>
               <Picker mode='date' onChange={this.onDateChange}>
                 <AtList>
-                  <AtListItem title='请选择生日' extraText={this.state.dateSel} />
+                  <AtListItem title='请选择生日' extraText={dateSel} />
                 </AtList>
               </Picker>
             </View>
           </View>
           <View className='form-item'>
-            {
-              this.state.sexArray.map (item => {
-                return <Radio value={item.value} checked={item.value === this.state.sex ? true: false }>{item.name}</Radio>
-              })
-            }
-          </View>
-          <View className='form-item'>
             <View>
-              <Picker mode='selector' range={this.state.selector} onChange={this.onChange}>
+              <Picker mode='selector' range={selector} onChange={this.onChange}>
                 <AtList>
                   <AtListItem
                     title='检测地址'
@@ -191,13 +200,11 @@ class Register extends Component {
               </Picker>
             </View>
           </View>
-          <View className='form-item'>
-            <AtButton formType='submit'>注册</AtButton>
-          </View>
+          <AtButton formType='submit' className='submit-btn' type='primary' >注册</AtButton>
         </AtForm>
       </View>
-      )
-    }
+    )
+  }
 }
 
-export default Register  as ComponentType
+export default Register as ComponentType

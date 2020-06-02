@@ -6,9 +6,9 @@ const counterStore = observable({
     console.log(this)
     this.counter++
   },
-  increment() {
-    console.log(this)
-    this.counter++
+  increment(number) {
+    console.log(number)
+    this.counter += number
   },
   decrement() {
     console.log(this)

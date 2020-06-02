@@ -4,30 +4,33 @@ import { observer, inject } from '@tarojs/mobx'
 import { AtButton, AtInput } from 'taro-ui'
 import { Layout, TipPanel, ImagePanel } from '@components'
 import { auth, util, cfg, http, lang } from '@utils'
-import './detail.scss'
+import { getDetail } from '@api/reportApi'
+import './report.scss'
 
 @inject('reportStore')
 @observer
 export default class Detail extends Component {
   config = {
-    navigationBarTitleText: lng.get('report'),
+    navigationBarTitleText: lang.getValByName('report'),
   }
   async componentDidMount() {
     const { _id = '' } = this.$router.params;
     // console.log('detail_id', this.$router, this.$router.params);
     if (!_id || !_id.length) {
-      await util.toast(lng.get('params_err_tip'));
+      await util.toast(lang.getValByName('params_err_tip'));
       return;// util.reLaunch({ url: '/pages/report/list' }); // 暂时停在此页
     }
     this.fetch({ _id });
   }
   fetch(search) {
     const { reportStore } = this.props
-    search.__lng = lng.getLng();
-    reportStore.getData(search, async r => {
-      if (!r.data || !r.data._id) {
-        await util.alert({ msg: lng.get(['report', 'no_exists']) });
-        return;// util.reLaunch({ url: '/pages/report/list' });// 暂时停在此页
+    search.__lng = lang.getLng();
+    getDetail(search).then(res => {
+      if(res) {
+        const { success, data:{data} } = res
+        if(success) {
+          reportStore.setList(list)
+        }
       }
     })
   }
@@ -67,15 +70,15 @@ export default class Detail extends Component {
         <View className='at-row state_panel'>
           <View className='at-col item'>
             <View><Text className='title'>{data.score_arom}</Text></View>
-            <View>{lng.get('arom')}</View>
+            <View>{lang.getValByName('arom')}</View>
           </View>
           <View className='at-col item'>
             <View><Text className='title'>{data.score_stability}</Text></View>
-            <View>{lng.get('stability')}</View>
+            <View>{lang.getValByName('stability')}</View>
           </View>
           <View className='at-col item'>
             <View><Text className='title'>{data.score_symmetry}</Text></View>
-            <View>{lng.get('symmetry')}</View>
+            <View>{lang.getValByName('symmetry')}</View>
           </View>
         </View>
 
