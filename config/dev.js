@@ -3,8 +3,7 @@
 
 const isH5 = process.env.CLIENT_ENV === 'h5'
 
-console.log(isH5)
-const HOST = '"https://miniapp.you.163.com"'
+const HOST = '"http://localhost:7001"'
 const HOST_M = '"https://m.you.163.com"'
 
 module.exports = {
@@ -22,14 +21,14 @@ module.exports = {
         '/api/': {
           target: JSON.parse(HOST),
           pathRewrite: {
-            '^/api/': '/'
+            '^/api/': '/api/'
           },
           changeOrigin: true
         },
         '/api-m/': {
           target: JSON.parse(HOST_M),
           pathRewrite: {
-            '^/api-m/': '/'
+            '^/api-m/': '/api/'
           },
           changeOrigin: true
         }

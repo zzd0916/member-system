@@ -82,39 +82,38 @@ class Login extends Component<IProps, IState> {
   onLogin() {
     const { langStore } = this.props
     const loginTitle = langStore.getByKey('login')
+    const { phone, code } = this.state 
     this.checkParams()
     toast.showLoading(`${loginTitle}...`);
     if (this.checkParams()) {
-      let params: loginProps = {
-        phone: this.state.phone,
-        code: this.state.code
+      let params: ILogin = {
+        phone,
+        code
       }
-      let data = {
-        _id: '000001',
-        phone: '15680686538'
-      }
-      auth.setLogin(data);
-      // const url = getStorageByName('_login_src') ? setStorageSync('_login_src') : '/pages/home/home'
-      const url = '/pages/home/home'
-      // setStorageSync('_login_src', null)
-      util.reLaunch({
-        url
-      });
-    
-      // login(params).then( (res)=> {
-      //   console.log(res)
-      //   Taro.reLaunch({
-      //     url: '/pages/home/home'
-      //   })
-      // }).catch( e => {
-      //   toast.alert({
-      //     title: '登陆失败',
-      //     msg: e.msg || e.message
-      //   })
-      // }).finally (e => {
-      //   toast.hideLoading()
-      // })
-
+      login(params).then( (res)=> {
+        if(res.success && res.data._id) {
+          auth.setLogin(res.data);
+          Taro.reLaunch({
+            url: '/pages/home/home'
+          })
+        } else {
+          let errCode =  res.errCode || res.err_msg
+          let errMsg =  res.errMsg || res.err_msg
+          toast.alert({
+            title: '登陆失败',
+            msg:`errCode: ${errCode}, errMsg: ${errMsg}`
+          })
+        }
+      }).catch( e => {
+        let errCode =  e.errCode || e.err_msg
+        let errMsg =  e.errMsg || e.err_msg
+        toast.alert({
+          title: '出了点意外',
+          msg: `errCode: ${errCode}, errMsg: ${errMsg}`
+        })
+      }).finally (e => {
+        toast.hideLoading()
+      })
     }
   }
   /**

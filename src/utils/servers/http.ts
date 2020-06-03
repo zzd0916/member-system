@@ -1,5 +1,4 @@
 import Taro from '@tarojs/taro'
-import getBaseUrl from './baseUrl'
 import interceptors from './interceptors'
 import { toast } from '@utils'
 
@@ -10,11 +9,10 @@ class httpRequest {
   async baseOptions(params, method = "GET") {
   
     let { url, data } = params;
-    const BASE_URL = getBaseUrl();
     let contentType = "application/json";
     contentType = params.contentType || contentType;
     const option = {
-      url: BASE_URL + url,
+      url: url,
       data: data,
       method: method,
       header: {
@@ -26,7 +24,8 @@ class httpRequest {
     toast.showLoading();
     let result = null;
     try {
-      // result = await Taro.request(option);
+      console.log(option)
+      result = await Taro.request(option);
       // result = {
       //   success: true,
       //   data: {

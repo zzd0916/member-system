@@ -18,11 +18,16 @@ const formatTime = date => {
   );
 };
 
+const fromatDate = (date, split) => {
+  return (formatTime(date).substr(0, 10)).replace(/\//g, '-')
+}
+
 const formatNumber = n => {
   n = n.toString();
   return n[1] ? n : '0' + n;
 };
 
 export default {
-    formatTime 
+    formatTime,
+    fromatDate
 };

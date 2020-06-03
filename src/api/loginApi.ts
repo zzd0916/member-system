@@ -9,9 +9,9 @@ export interface ISendCode {
 }
 
 export const login =  async (parms: ILogin) => {
-    return await http.post('/api/login',parms)
+    return await http.post('/api/user/login',parms)
 }
 
 export const sendCode = async (parms: ISendCode) => {
-    return await http.post('/api/sendCode',parms)
+    return await http.post('/api/service/sendCode',parms)
 }

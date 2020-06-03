@@ -3,10 +3,11 @@ import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Text, Picker, Radio } from '@tarojs/components'
 import { observer, inject } from '@tarojs/mobx'
 import { AtForm, AtInput, AtButton, AtList, AtListItem, AtAvatar, AtRadio } from 'taro-ui'
-// import {  auth, lang } from '@utils'
-// import {  auth, lang, http } from '../../utils'
+import { IRegister, register } from '@api/registerApi'
+import { format, toast } from '@utils'
 
 import './register.scss'
+import { IRegister } from 'src/api/registerApi'
 
 type PageStateProps = {
   counterStore: {
@@ -47,16 +48,14 @@ class Register extends Component {
       name: '',
       idCard: ''
       phone: '',
-      code: '',
       sexArray: [
         { label: '男', value: 'man' },
         { label: '女', value: 'woman' },
       ],
       sex: 'man',
       selector: ['新清泰克', '智能健身房', '巴西', '日本'],
-      selectorChecked: '新清泰克',
-      timeSel: '12:01',
-      dateSel: '2018-04-22'
+      shop: '新清泰克',
+      date: format.fromatDate(new Date(), '-')
     }
   }
 
@@ -100,8 +99,69 @@ class Register extends Component {
     // return e.target.value
   }
   onSubmit(event) {
-    console.log(this.state)
+    const { name, phone, sex, shop, date, idCard } = this.state
+    this.checkParams()
+    toast.showLoading(`注册ing...`);
+    if (this.checkParams()) {
+      let params: IRegister = {
+        name,
+        phone,
+        sex,
+        shop,
+        date,
+        idCard,
+      }
+      register(params).then( (res)=> {
+        if(res.success) {
+          Taro.reLaunch({
+            url: '/pages/login/login'
+          })
+        } else {
+          let errCode =  res.errCode || res.err_msg
+          let errMsg =  res.errMsg || res.err_msg
+          toast.alert({
+            title: '注册失败',
+            msg:`errCode: ${errCode}, errMsg: ${errMsg}`
+          })
+        }
+      }).catch( e => {
+        let errCode =  e.errCode || e.err_msg
+        let errMsg =  e.errMsg || e.err_msg
+        toast.alert({
+          title: '出了点意外',
+          msg: `errCode: ${errCode}, errMsg: ${errMsg}`
+        })
+      }).finally (e => {
+        toast.hideLoading()
+      })
+    }
+    return 
   }
+   /**
+   * 检查参数是否合法
+   */
+  checkParams(): boolean | undefined {
+    const { name, phone, sex, shop, date, idCard } = this.state
+    let flag = true
+    if(!name || name.length<2) {
+      toast.toast('名字不能为空且长度不小于2')
+      flag = false
+      return
+    }
+    if(!idCard || idCard.length<17) {
+      toast.toast('身份证号不能为空且长度不小于17')
+      flag = false
+      return
+    }
+    if(!phone || phone.length<8) {
+      toast.toast('手机号不能为空且长度不小于10')
+      flag = false
+      return
+    }
+
+    return flag
+  }
+  
   back() {
     Taro.navigateTo({
       url: '/pages/login/login'
@@ -109,26 +169,20 @@ class Register extends Component {
   }
   onChange = e => {
     this.setState({
-      selectorChecked: this.state.selector[e.detail.value]
-    })
-  }
-  onTimeChange = e => {
-    this.setState({
-      timeSel: e.detail.value
+      shop: this.state.selector[e.detail.value]
     })
   }
   onDateChange = e => {
     this.setState({
-      dateSel: e.detail.value
+      date: e.detail.value
     })
   }
   onSexChange = v => {
-    console.log('radio发生change事件，携带value值为：', v)
     this.setState({ sex: v })
   }
   render() {
     // const {RegisterStore } = this.props;
-    const { title, sex, sexArray, selector, name, idCard, phone, dateSel } = this.state
+    const { title, sex, sexArray, selector, name, idCard, phone, date } = this.state
     return (
       <View className='register'>
         <View className='register-title'>
@@ -183,7 +237,7 @@ class Register extends Component {
             <View>
               <Picker mode='date' onChange={this.onDateChange}>
                 <AtList>
-                  <AtListItem title='请选择生日' extraText={dateSel} />
+                  <AtListItem title='请选择生日' extraText={date} />
                 </AtList>
               </Picker>
             </View>
@@ -194,7 +248,7 @@ class Register extends Component {
                 <AtList>
                   <AtListItem
                     title='检测地址'
-                    extraText={this.state.selectorChecked}
+                    extraText={this.state.shop}
                   />
                 </AtList>
               </Picker>
