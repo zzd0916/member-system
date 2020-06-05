@@ -17,14 +17,13 @@ class httpRequest {
       method: method,
       header: {
         'content-type': contentType,
-        'Authorization': Taro.getStorageSync('Authorization')
+        'authorization': Taro.getStorageSync('token')
       }
     };
     
     toast.showLoading();
     let result = null;
     try {
-      console.log(option)
       result = await Taro.request(option);
       // result = {
       //   success: true,

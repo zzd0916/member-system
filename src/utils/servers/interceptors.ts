@@ -8,7 +8,6 @@ const customInterceptor = (chain) => {
     const requestParams = chain.requestParams
     return chain.proceed(requestParams).then(res => {
         // 只要请求成功，不管返回什么状态码，都走这个回调
-        console.log('res',res)
        if(res.statusCode === HTTP_STATUS.SUCCESS) {
             return res.data
         } else if( res.statusCode === HTTP_STATUS.SERVER_ERROR) {

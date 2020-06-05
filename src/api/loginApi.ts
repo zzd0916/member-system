@@ -12,6 +12,6 @@ export const login =  async (parms: ILogin) => {
     return await http.post('/api/user/login',parms)
 }
 
-export const sendCode = async (parms: ISendCode) => {
-    return await http.post('/api/service/sendCode',parms)
+export const sendPhoneCode = async (parms: ISendCode) => {
+    return await http.post('/api/base/sendCode',parms)
 }

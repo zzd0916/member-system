@@ -5,7 +5,7 @@ import { observer, inject } from '@tarojs/mobx'
 import { AtForm, AtInput, AtButton, AtAvatar } from 'taro-ui'
 import { config, toast, auth, util } from '@utils'
 import { getStorageByName, setStorageSync } from '@utils/stroage'
-import { login, sendCode, ILogin, sendCodeProps } from '@api/loginApi'
+import { login, sendPhoneCode, ILogin, sendCodeProps } from '@api/loginApi'
 import { LangProps } from '@store/lang.ts'
 import { ChooseLanguage } from '@components'
 
@@ -20,6 +20,8 @@ interface IProps {
 export interface IState {
   phone: string;
   code: string;
+  countDown: any;
+  isSend: boolean;
 }
 
 @inject('langStore')
@@ -43,6 +45,13 @@ class Login extends Component<IProps, IState> {
     code: null,
   }
 
+  state: IState = {
+    phone: '',
+    code: '',
+    countDown: 60,
+    isSend: false,
+  }
+
   componentWillMount() {
     // console.log('login componentWillMount')
   }
@@ -57,6 +66,8 @@ class Login extends Component<IProps, IState> {
 
   componentWillUnmount() {
     // console.log('login componentWillUnmount')
+    clearInterval(this.IV); //可以停止
+  
   }
 
   componentDidShow() {
@@ -82,7 +93,7 @@ class Login extends Component<IProps, IState> {
   onLogin() {
     const { langStore } = this.props
     const loginTitle = langStore.getByKey('login')
-    const { phone, code } = this.state 
+    const { phone, code } = this.state
     this.checkParams()
     toast.showLoading(`${loginTitle}...`);
     if (this.checkParams()) {
@@ -90,28 +101,29 @@ class Login extends Component<IProps, IState> {
         phone,
         code
       }
-      login(params).then( (res)=> {
-        if(res.success && res.data._id) {
+      login(params).then((res) => {
+        if (res.success && res.data._id) {
           auth.setLogin(res.data);
+          if(res.token) {
+            setStorageSync("token", res.token)
+          }
           Taro.reLaunch({
             url: '/pages/home/home'
           })
         } else {
-          let errCode =  res.errCode || res.err_msg
-          let errMsg =  res.errMsg || res.err_msg
+          let errMsg = res.errMsg || res.err_msg
           toast.alert({
             title: '登陆失败',
-            msg:`errCode: ${errCode}, errMsg: ${errMsg}`
+            msg: errMsg || '意外的错误'
           })
         }
-      }).catch( e => {
-        let errCode =  e.errCode || e.err_msg
-        let errMsg =  e.errMsg || e.err_msg
+      }).catch(e => {
+        let errMsg = e.errMsg || e.err_msg
         toast.alert({
           title: '出了点意外',
-          msg: `errCode: ${errCode}, errMsg: ${errMsg}`
+          msg: errMsg || '意外的错误'
         })
-      }).finally (e => {
+      }).finally(e => {
         toast.hideLoading()
       })
     }
@@ -127,36 +139,32 @@ class Login extends Component<IProps, IState> {
   */
   checkPhone() {
     const { phone } = this.state
-    let flag = true
     if (!phone) {
       toast.toast('手机号不能为空')
-      flag = false
-      return
+      return false
+
     }
     if (phone.length < 7) {
       toast.toast('手机号格式不正确')
-      flag = false
-      return
+      return false
+
     }
-    return flag
+    return true
   }
   /**
    * 验证code是否为空
   */
   checkCode() {
     const { code } = this.state
-    let flag = true;
     if (!code) {
       toast.toast('验证码不能为空')
-      flag = false
-      return
+      return false
     }
     if (code.length < 4) {
       toast.toast('验证码长度不正确')
-      flag = false
-      return
+      return false
     }
-    return flag
+    return true
   }
 
   back() {
@@ -166,9 +174,38 @@ class Login extends Component<IProps, IState> {
   }
   sendCode(e) {
     e.preventDefault();
-    this.checkPhone();
-    console.log("sendcode")
+    let flag = this.checkPhone();
+    console.log('flag', flag)
+    if (flag) {
+      let { countDown, phone } = this.state;
+      const { langStore } = this.props
+      console.log("sendCode")
+      sendPhoneCode({ phone, __lng: langStore.getLng()})
+        .then(ret => {
+          if (ret.success) {
+            this.setState({
+              isSend: true
+            })
+            let countDown = 60
+            setStorageSync('lastGetPhoneCode', new Date());
+            this.IV  = setInterval(() => {
+              console.log("setInterval", countDown)
+              countDown -= 1
+              this.setState({ countDown });
+              if (countDown <= 0) {
+                this.setState({
+                  isSend: false,
+                  countDown: 60
+                })
+                return clearInterval(this.IV);
+              }
+            }, 1000)
+          }
+        })
+      
+    }
   }
+
   goToRegisterPage() {
     Taro.navigateTo({
       url: '/pages/register/register'
@@ -176,6 +213,7 @@ class Login extends Component<IProps, IState> {
   }
   render() {
     const { langStore } = this.props;
+    const { isSend, countDown } = this.state;
     const title = langStore.getByKey('title')
     const slogon = langStore.getByKey('member') + langStore.getByKey('login')
     const phoneTitle = langStore.getByKey('phone')
@@ -217,7 +255,10 @@ class Login extends Component<IProps, IState> {
               maxLength={6}
               onChange={this.handleCodeChange.bind(this)}
             >
-              <AtButton onClick={this.sendCode.bind(this)}>{codeTitle} </AtButton>
+            {
+              isSend === true ? <AtButton customStyle='width: 90px;'>{countDown}s</AtButton> : <AtButton  customStyle='width: 90px;' onClick={this.sendCode.bind(this)}>{codeTitle}</AtButton>
+            }
+             
             </AtInput>
           </View>
           <View className='form-item'>

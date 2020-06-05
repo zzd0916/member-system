@@ -1,13 +1,11 @@
 import { ComponentType } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Text, Picker, Radio } from '@tarojs/components'
-import { observer, inject } from '@tarojs/mobx'
-import { AtForm, AtInput, AtButton, AtList, AtListItem, AtAvatar, AtRadio } from 'taro-ui'
+import { AtForm, AtInput, AtButton, AtList, AtListItem, AtAvatar, AtRadio, AtMessage } from 'taro-ui'
 import { IRegister, register } from '@api/registerApi'
 import { format, toast } from '@utils'
 
 import './register.scss'
-import { IRegister } from 'src/api/registerApi'
 
 type PageStateProps = {
   counterStore: {
@@ -113,23 +111,27 @@ class Register extends Component {
       }
       register(params).then( (res)=> {
         if(res.success) {
-          Taro.reLaunch({
-            url: '/pages/login/login'
+          Taro.atMessage({
+            'message': '注册成功',
+            'type': 'success',
           })
+          setTimeout( ()=> {
+            Taro.reLaunch({
+              url: '/pages/login/login'
+            })
+          },1500)
         } else {
-          let errCode =  res.errCode || res.err_msg
           let errMsg =  res.errMsg || res.err_msg
           toast.alert({
             title: '注册失败',
-            msg:`errCode: ${errCode}, errMsg: ${errMsg}`
+            msg:`${errMsg}`
           })
         }
       }).catch( e => {
-        let errCode =  e.errCode || e.err_msg
         let errMsg =  e.errMsg || e.err_msg
         toast.alert({
           title: '出了点意外',
-          msg: `errCode: ${errCode}, errMsg: ${errMsg}`
+          msg: errMsg
         })
       }).finally (e => {
         toast.hideLoading()
@@ -154,7 +156,7 @@ class Register extends Component {
       return
     }
     if(!phone || phone.length<8) {
-      toast.toast('手机号不能为空且长度不小于10')
+      toast.toast('手机号不能为空且长度不小于8')
       flag = false
       return
     }
@@ -185,6 +187,7 @@ class Register extends Component {
     const { title, sex, sexArray, selector, name, idCard, phone, date } = this.state
     return (
       <View className='register'>
+        <AtMessage />
         <View className='register-title'>
           <AtAvatar image='http://holomotion.ntsports.tech/img/logo.png' size={'large'}></AtAvatar>
           <View>{title}</View>
