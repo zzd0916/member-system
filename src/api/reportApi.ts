@@ -35,7 +35,7 @@ export interface IReportDetail {
  * @return IReportList
 */
 export const getList =  async (parms: IReportList) => {
-    return await http.get('/api/m/service/report/',parms)
+    return await http.post('/api/report/list/',parms)
 }
 
 /**
@@ -43,5 +43,5 @@ export const getList =  async (parms: IReportList) => {
  * @return IReportDetail
  */
 export const getDetail = async (parms: IReportDetail) => {
-    return await http.get('/api/m/service/report/detail',parms)
+    return await http.get('/api/report/detail/',parms)
 }

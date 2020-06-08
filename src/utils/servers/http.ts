@@ -1,13 +1,16 @@
 import Taro from '@tarojs/taro'
 import interceptors from './interceptors'
 import { toast } from '@utils'
+import { util } from '@utils'
+import { setStorageSync } from '@utils/stroage'
+import { HTTP_STATUS } from '@constances/status'
 
 interceptors.forEach(interceptorItem => Taro.addInterceptor(interceptorItem))
 
 class httpRequest {
- 
+
   async baseOptions(params, method = "GET") {
-  
+
     let { url, data } = params;
     let contentType = "application/json";
     contentType = params.contentType || contentType;
@@ -20,46 +23,42 @@ class httpRequest {
         'authorization': Taro.getStorageSync('token')
       }
     };
-    
+
     toast.showLoading();
     let result = null;
     try {
       result = await Taro.request(option);
-      // result = {
-      //   success: true,
-      //   data: {
-      //     list: [
-      //       {
-      //         Detection_Id: "d35943dc0a18424c872ef7c933fb50dd",
-      //         Time: "1576121175896",
-      //         date: "12/12/2019",
-      //         realName: "张泽东",
-      //         score_arom: 80,
-      //         score_overall: 74,
-      //         score_stability: 79,
-      //         score_symmetry: 66,
-      //         tester: {_id: "5df0c811728d6a3c1d9e3dd3", realName: "张泽东", phone: "15680686538"},
-      //         _id: "5df1b357728d6a3c1d9e3ddf"
-      //       },
-      //       {
-      //         Detection_Id: "d35943dc0a18424c872ef7c933fb50dd",
-      //         Time: "1576121175896",
-      //         date: "12/12/2019",
-      //         realName: "张泽东",
-      //         score_arom: 80,
-      //         score_overall: 74,
-      //         score_stability: 79,
-      //         score_symmetry: 66,
-      //         tester: {_id: "5df0c811728d6a3c1d9e3dd3", realName: "张泽东", phone: "15680686538"},
-      //         _id: "5df1b357728d6a3c1d9e3ddf"
-      //       }
-      //       ]
-      //   }
-      // }
     } catch (e) {
+      // 只要请求成功，不管返回什么状态码，都走这个回调
+      if (e.status === HTTP_STATUS.SERVER_ERROR) {
+        return Promise.reject("服务器内部错误")
+
+      } else if (e.status === HTTP_STATUS.NOT_FOUND) {
+        return Promise.reject("请求资源不存在")
+
+      } else if (e.status === HTTP_STATUS.BAD_GATEWAY) {
+        return Promise.reject("服务端出现了问题")
+
+      } else if (e.status === HTTP_STATUS.FORBIDDEN) {
+        setStorageSync("_login_data", "")
+        return Promise.reject("没有权限访问");
+
+      } else if (e.status === HTTP_STATUS.AUTHENTICATE) {
+        setStorageSync("_login_data", "")
+        toast.confirm({
+          title: String(e.status),
+          msg: "鉴权失败，请重新登陆",
+          success: ()=> {
+            Taro.navigateTo({
+              url: "/pages/login/login"
+            })
+          }
+        })
+        return 
+      }
       toast.alert({
-        title:"操作失败",
-        msg: "请联系管理员"
+        title: String(e.status),
+        msg: e.statusText
       })
     } finally {
       toast.hideLoading();

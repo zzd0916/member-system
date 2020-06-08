@@ -95,38 +95,28 @@ class Login extends Component<IProps, IState> {
     const loginTitle = langStore.getByKey('login')
     const { phone, code } = this.state
     this.checkParams()
-    toast.showLoading(`${loginTitle}...`);
-    if (this.checkParams()) {
-      let params: ILogin = {
-        phone,
-        code
-      }
-      login(params).then((res) => {
-        if (res.success && res.data._id) {
-          auth.setLogin(res.data);
-          if(res.token) {
-            setStorageSync("token", res.token)
-          }
-          Taro.reLaunch({
-            url: '/pages/home/home'
-          })
-        } else {
-          let errMsg = res.errMsg || res.err_msg
-          toast.alert({
-            title: '登陆失败',
-            msg: errMsg || '意外的错误'
-          })
+    if (!this.checkParams()) return;
+    let params: ILogin = {
+      phone,
+      code
+    }
+    login(params).then((res) => {
+      if (res.success && res.data._id) {
+        auth.setLogin(res.data);
+        if(res.token) {
+          setStorageSync("token", res.token)
         }
-      }).catch(e => {
-        let errMsg = e.errMsg || e.err_msg
+        Taro.reLaunch({
+          url: '/pages/home/home'
+        })
+      } else {
+        let errMsg = res.errMsg || res.err_msg
         toast.alert({
-          title: '出了点意外',
+          title: '登陆失败',
           msg: errMsg || '意外的错误'
         })
-      }).finally(e => {
-        toast.hideLoading()
-      })
-    }
+      }
+    })
   }
   /**
    * 检查参数是否合法
@@ -175,11 +165,9 @@ class Login extends Component<IProps, IState> {
   sendCode(e) {
     e.preventDefault();
     let flag = this.checkPhone();
-    console.log('flag', flag)
     if (flag) {
       let { countDown, phone } = this.state;
       const { langStore } = this.props
-      console.log("sendCode")
       sendPhoneCode({ phone, __lng: langStore.getLng()})
         .then(ret => {
           if (ret.success) {
@@ -189,7 +177,6 @@ class Login extends Component<IProps, IState> {
             let countDown = 60
             setStorageSync('lastGetPhoneCode', new Date());
             this.IV  = setInterval(() => {
-              console.log("setInterval", countDown)
               countDown -= 1
               this.setState({ countDown });
               if (countDown <= 0) {
@@ -202,7 +189,6 @@ class Login extends Component<IProps, IState> {
             }, 1000)
           }
         })
-      
     }
   }
 

@@ -13,6 +13,11 @@ export default class Detail extends Component {
   config = {
     navigationBarTitleText: lang.getValByName('report'),
   }
+
+  state = {
+    data: {}
+  }
+
   async componentDidMount() {
     const { _id = '' } = this.$router.params;
     // console.log('detail_id', this.$router, this.$router.params);
@@ -20,16 +25,16 @@ export default class Detail extends Component {
       await util.toast(lang.getValByName('params_err_tip'));
       return;// util.reLaunch({ url: '/pages/report/list' }); // 暂时停在此页
     }
-    this.fetch({ _id });
+    this.fetch({ id: _id });
   }
   fetch(search) {
     const { reportStore } = this.props
     search.__lng = lang.getLng();
     getDetail(search).then(res => {
       if(res) {
-        const { success, data:{data} } = res
+        const { success, data } = res
         if(success) {
-          reportStore.setList(list)
+          reportStore.setData(data)
         }
       }
     })
@@ -42,7 +47,7 @@ export default class Detail extends Component {
       success: _ => {
         buyReport({ _id: data._id }, async state => {
           await util.toast('报告购买成功');
-          this.fetch({ _id: data._id });
+          this.fetch({ id: data._id });
           // return util.reLaunch({ url: '/pages/report/list' });
         })
       },

@@ -19,7 +19,7 @@ export default class extends BaseList {
   state = {
     list: []
     count: 0,
-    ps: 1,
+    ps: 10,
     tabCurrIdx: 0,
   }
 
@@ -27,7 +27,7 @@ export default class extends BaseList {
     this.fetch({ p: 1 });
   }
 
-  fetch(s={p:1, state: this.state.tabCurrIdx}) {
+  fetch(s={p:1, state: this.state.tabCurrIdx, ps:10}) {
     const { reportStore } = this.props
     getList(s).then(res=> {
       if(res) {
@@ -36,7 +36,7 @@ export default class extends BaseList {
           reportStore.setList(list)
         }
       } else {
-        toast.toast("暂无数据")
+        toast.toast(res)
       }
     });
   }
